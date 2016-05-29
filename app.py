@@ -76,7 +76,7 @@ def handle(msg):
 							del homework[subject]
 							save_homework()
 				elif cmd == 'help':
-					bot.sendMessage(chat_id, 'Help was called')
+					bot.sendMessage(chat_id, 'Ajuda:\r\n/dever add <materia> <conteudo> - Adiciona um novo dever da máteria.\r\n/dever del <materia> - Apaga todos os deveres salvos da máteria.\r\n/dever list [materia] - Mostrar todos os deveres ou somente os deveres da matéria especificada.\r\n/dever help - Mostra essa mensagem', parse_mode='Markdown')
 
 
 app = Flask(__name__)
