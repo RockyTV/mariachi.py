@@ -56,8 +56,8 @@ def handle(msg):
 							save_homework()
 				elif cmd == 'list':
 					if match.group(2) != None:
+						subject = match.group(2)
 						if subject in homework:
-							subject = match.group(2)
 							print ('%s requested %s homeworks' % (msg['from']['username'], subject))
 							bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, homework[subject]), 'Markdown')
 					else:
