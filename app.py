@@ -17,7 +17,7 @@ except ImportError:
 #GRUPO_SALA = -1001045780811
 #GRUPO_SALA = -126875187
 GRUPO_SALA = int(os.environ['TELEGRAM_GRUPO_SALA'])
-SUBJECTS = ['matematica', 'historia', 'quimica', 'geografia']
+SUBJECTS = ['portugues', 'redacao', 'literatura', 'fisica', 'quimica', 'biologia', 'geografia', 'historia', 'matematica', 'filosofia', 'sociologia', 'ingles', 'espanhol', 'artes']
 
 homework = {}
 
@@ -54,8 +54,6 @@ def handle(msg):
 							print ('%s added %s homework' % (msg['from']['username'], subject))
 							bot.sendMessage(chat_id, 'Dever de %s adicionado!' % subject)
 							save_homework()
-					else:
-						print ('Invalid usage.')
 				elif cmd == 'list':
 					if match.group(2) != None:
 						if subject in homework:
