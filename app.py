@@ -14,9 +14,20 @@ try:
 except ImportError:
 	from queue import Queue
 
-TOKEN = '173136669:AAGuqYDvnibwF0xJzUnzcsREoUVWxVZMYMY'
+def load_token():
+	if os.path.isfile('token.txt'):
+		with open('token.txt', 'r') as f:
+			return f.read(45).strip()
+
+def load_group_id():
+	if os.path.isfile('sala.txt'):
+		with open('sala.txt', 'r') as f:
+			return int(f.read().strip())
+
+TOKEN = load_token()
 #GRUPO_SALA = -1001045780811
-GRUPO_SALA = -126875187
+#GRUPO_SALA = -126875187
+GRUPO_SALA = load_group_id()
 SUBJECTS = ['matematica', 'historia', 'quimica', 'geografia']
 
 homework = {}
@@ -86,16 +97,17 @@ load_homework()
 
 bot.message_loop(handle, source=update_queue)
 
-@app.route('/hook', methods=['GET', 'POST'])
+@app.route('/hook', methods=['POST'])
 def pass_update():
 	update_queue.put(request.data)
 	return 'OK'
 
 @app.route('/')
 def hello_world():
-	return 'Hello, world!'
+	return 'It works!'
 
 if __name__ == '__main__':
-	ip = os.environ['OPENSHIFT_PYTHON_IP']
+	if not 'OPENSHIFT_PYTHON_IP' in os.environ: ip = '127.0.0.1'
+	else: ip = os.environ['OPENSHIFT_PYTHON_IP']
 	bot.setWebhook('https://pymariachi-xinayder.rhcloud.com/hook')
 	app.run(host=ip, port=8080, debug=True)
