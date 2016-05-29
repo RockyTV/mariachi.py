@@ -245,3 +245,6 @@ ModelManifest.xml
 .fake/
 
 *.pickle
+*.sln
+*.pyproj
+__pycache__
