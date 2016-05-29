@@ -93,4 +93,4 @@ def pass_update():
 
 if __name__ == '__main__':
 	bot.setWebhook('https://pymariachi-xinayder.rhcloud.com/hook')
-	app.run(port=80, debug=True)
+	app.run(debug=True)
