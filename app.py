@@ -20,13 +20,16 @@ GRUPO_SALA = int(os.environ['TELEGRAM_GRUPO_SALA'])
 SUBJECTS = ['portugues', 'redacao', 'literatura', 'fisica', 'quimica', 'biologia', 'geografia', 'historia', 'matematica', 'filosofia', 'sociologia', 'ingles', 'espanhol', 'artes']
 
 homework = {}
+is_openshift = 'OPENSHIFT_PYTHON_IP' in os.environ
+if is_openshift: homework_path = os.path.join(os.path.expanduser('~'), 'app-root/data/homework.pickle')
+else: homework_path = 'homework.pickle'
 
 def save_homework():
-	with open('homework.pickle', 'wb') as f:
+	with open(homework_path, 'wb') as f:
 		pickle.dump(homework, f, protocol=3)
 def load_homework():
-	if os.path.exists('homework.pickle'):
-		with open('homework.pickle', 'rb') as f:
+	if os.path.exists(homework_path):
+		with open(homework_path, 'rb') as f:
 			homework.update(pickle.load(f))
 
 def handle(msg):
