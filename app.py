@@ -23,7 +23,7 @@ homework = {}
 
 def save_homework():
 	with open('homework.pickle', 'wb') as f:
-		pickle.dump(homework, f, 3)
+		pickle.dump(homework, f, protocol=3)
 def load_homework():
 	if os.path.exists('homework.pickle'):
 		with open('homework.pickle', 'rb') as f:
@@ -91,6 +91,11 @@ def pass_update():
 	update_queue.put(request.data)
 	return 'OK'
 
+@app.route('/')
+def hello_world():
+	return 'Hello, world!'
+
 if __name__ == '__main__':
+	ip = os.environ['OPENSHIFT_PYTHON_IP']
 	bot.setWebhook('https://pymariachi-xinayder.rhcloud.com/hook')
-	app.run(debug=True)
+	app.run(host=ip, port=8080, debug=True)
