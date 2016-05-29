@@ -16,7 +16,7 @@ except ImportError:
 
 #GRUPO_SALA = -1001045780811
 #GRUPO_SALA = -126875187
-GRUPO_SALA = os.environ['TELEGRAM_GRUPO_SALA']
+GRUPO_SALA = int(os.environ['TELEGRAM_GRUPO_SALA'])
 SUBJECTS = ['matematica', 'historia', 'quimica', 'geografia']
 
 homework = {}
