@@ -35,7 +35,7 @@ def handle(msg):
 	if content_type == 'text':
 		if chat_id == GRUPO_SALA:
 			raw_message = msg['text'].strip()
-			regex = r"^/dever\s(add|del|list|help)\s?([\w]+)?\s?(.+)?$"
+			regex = r"^/dever\s?(add|del|list|help)?\s?([\w]+)?\s?(.+)?$"
 			if re.search(regex, raw_message, flags=re.ASCII):
 				match = re.search(regex, raw_message, flags=re.UNICODE)
 				cmd = match.group(1)
@@ -73,7 +73,7 @@ def handle(msg):
 							bot.sendMessage(chat_id, 'Os deveres de %s foram apagados' % subject)
 							del homework[subject]
 							save_homework()
-				elif cmd == 'help':
+				elif cmd == 'help' or cmd == None:
 					bot.sendMessage(chat_id, 'Ajuda:\r\n/dever add <materia> <conteudo> - Adiciona um novo dever da máteria.\r\n/dever del <materia> - Apaga todos os deveres salvos da máteria.\r\n/dever list [materia] - Mostrar todos os deveres ou somente os deveres da matéria especificada.\r\n/dever help - Mostra essa mensagem', parse_mode='Markdown')
 
 
