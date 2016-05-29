@@ -14,20 +14,9 @@ try:
 except ImportError:
 	from queue import Queue
 
-def load_token():
-	if os.path.isfile('token.txt'):
-		with open('token.txt', 'r') as f:
-			return f.read(45).strip()
-
-def load_group_id():
-	if os.path.isfile('sala.txt'):
-		with open('sala.txt', 'r') as f:
-			return int(f.read().strip())
-
-TOKEN = load_token()
 #GRUPO_SALA = -1001045780811
 #GRUPO_SALA = -126875187
-GRUPO_SALA = load_group_id()
+GRUPO_SALA = os.environ['TELEGRAM_GRUPO_SALA']
 SUBJECTS = ['matematica', 'historia', 'quimica', 'geografia']
 
 homework = {}
@@ -91,7 +80,7 @@ def handle(msg):
 
 
 app = Flask(__name__)
-bot = telepot.Bot(TOKEN)
+bot = telepot.Bot(os.environ['TELEGRAM_TOKEN'])
 update_queue = Queue()
 load_homework()
 
