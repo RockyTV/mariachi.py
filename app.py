@@ -7,6 +7,12 @@ import telepot
 import pickle
 
 from datetime import date
+from flask import Flask, request
+
+try:
+	from Queue import Queue
+except ImportError:
+	from queue import Queue
 
 TOKEN = '173136669:AAGuqYDvnibwF0xJzUnzcsREoUVWxVZMYMY'
 #GRUPO_SALA = -1001045780811
@@ -73,12 +79,18 @@ def handle(msg):
 					bot.sendMessage(chat_id, 'Help was called')
 
 
-
+app = Flask(__name__)
 bot = telepot.Bot(TOKEN)
-bot.message_loop(handle)
-print ('Listening...')
+update_queue = Queue()
 load_homework()
-print ('Loaded homework!')
 
-while 1:
-	time.sleep(10)
+bot.message_loop(handle, source=update_queue)
+
+@app.route('/hook', methods=['GET', 'POST'])
+def pass_update():
+	update_queue.put(request.data)
+	return 'OK'
+
+if __name__ == '__main__':
+	bot.setWebhook('https://pymariachi-xinayder.rhcloud.com/hook')
+	app.run(port=80, debug=True)
