@@ -23,7 +23,7 @@ homework = {}
 
 def save_homework():
 	with open('homework.pickle', 'wb') as f:
-		pickle.dump(homework, f, pickle.HIGHEST_PROTOCOL)
+		pickle.dump(homework, f, 3)
 def load_homework():
 	if os.path.exists('homework.pickle'):
 		with open('homework.pickle', 'rb') as f:
