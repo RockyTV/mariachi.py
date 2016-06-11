@@ -45,61 +45,100 @@ def handle(msg):
 	if content_type == 'text':
 		if chat_id == GRUPO_SALA or chat_id == -126875187:
 			raw_message = msg['text'].strip()
-			regex = r"^/dever\s?(add|del|list|help)?\s?([\w]+)?\s?(.+)?$"
-			if re.search(regex, raw_message, flags=re.ASCII):
-				match = re.search(regex, raw_message, flags=re.UNICODE)
-				cmd = match.group(1)
-				# Check command
-				if cmd == 'add':
-					# Check if subject is valid
-					if match.group(2) and match.group(3) != None:
-						subject = match.group(2)
-						if not subject in SUBJECTS:
-							bot.sendMessage(chat_id, u'Matéria inválida. Conheço as seguintes matérias: %s' % ', '.join(['_%s_' % str(x) for x in SUBJECTS]), 'Markdown')
-						else:
-							today = date.today()
 
+			add_regex = r"^/nov(odever|amateria)\s?([\w]+)?\s?(.+)?$"
+			if re.search(add_regex, raw_message, flags=re.ASCII):
+				match = re.search(add_regex, raw_message, flags=re.UNICODE)
+				func = match.group(1)
+				if match.group(2) and match.group(3) != None:
+					subject = match.group(2)
+					if not subject in SUBJECTS:
+						bot.sendMessage(chat_id, u'Matéria inválida. Conheço as seguintes matérias: %s' % ', '.join(['_%s_' % str(x) for x in SUBJECTS]), 'Markdown')
+					else:
+						today = date.today()
+
+						if func == 'odever':
 							dever = {}
 							dever['data'] = today.strftime("%d/%m/%Y")
 							dever['conteudo'] = match.group(3)
 							homework[subject]['deveres'].append(dever)
-							print (homework[subject]['deveres'])
 
 							print ('%s added %s homework' % (msg['from']['username'], subject))
 							bot.sendMessage(chat_id, 'Dever de %s adicionado!' % subject)
 							save_homework()
-				elif cmd == 'list':
-					if match.group(2) != None:
-						subject = match.group(2)
-						if subject in homework:
-							print ('%s requested %s homeworks' % (msg['from']['username'], subject))
+						elif func == 'amateria':
+							materia = {}
+							materia['data'] = dever['data'] = today.strftime("%d/%m/%Y")
+							materia['conteudo'] = match.group(3)
+							homework[subject]['provas'].append(materia)
 
-							reply_deveres = ''
-							for dever in homework[subject]['deveres']:
-								reply_deveres += '*%s*\r\n%s\r\n\r\n' % (dever['data'], dever['conteudo'])
-							
-							if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
-					else:
-						print ('%s requested all homeworks' % msg['from']['username'])
-						for subject in SUBJECTS:
-							if subject in homework:
-								if homework[subject]['deveres'] != []:
-									reply_deveres = ''
-									for dever in homework[subject]['deveres']:
-										reply_deveres += '*%s* - #%d\r\n%s\r\n\r\n' % (dever['data'], homework[subject]['deveres'].index(dever) + 1, dever['conteudo'])
-							
-									if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
-
-				elif cmd == 'del':
-					if match.group(2) != None:
-						subject = match.group(2)
-						if subject in homework:
-							print ('%s deleted %s homeworks' % (msg['from']['username'], subject))
-							bot.sendMessage(chat_id, 'Os deveres de %s foram apagados' % subject)
-							del homework[subject]
+							bot.sendMessage(chat_id, 'Matéria de %s adicionada!' % subject)
 							save_homework()
-				elif cmd == 'help' or cmd == None:
-					bot.sendMessage(chat_id, 'Ajuda:\r\n/dever add <materia> <conteudo> - Adiciona um novo dever da máteria.\r\n/dever del <materia> - Apaga todos os deveres salvos da máteria.\r\n/dever list [materia] - Mostrar todos os deveres ou somente os deveres da matéria especificada.\r\n/dever help - Mostra essa mensagem', parse_mode='Markdown')
+
+				else:
+					bot.sendMessage('Exemplo de uso:\r\n*/novodever* historia Explicar por quê o Jonathan é o melhor professor\r\n*/novamateria* historia Império Romano')
+			list_regex = r"/listar(deveres|materias)\s?([\w]+)?$"
+			if re.search(list_regex, raw_message, flags=re.ASCII):
+				match = re.search(list_regex, raw_message, flags=re.UNICODE)
+				func = match.group(1)
+				if match.group(2) != None:
+					subject = match.group(2)
+					if subject in homework:
+						print ('%s requested %s homeworks' % (msg['from']['username'], subject))
+
+						reply_deveres = ''
+						for dever in homework[subject]['deveres']:
+							reply_deveres += '*%s*\r\n%s\r\n\r\n' % (dever['data'], dever['conteudo'])
+							
+							if reply_deveres != '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
+				else:
+					print ('%s requested all homeworks' % msg['from']['username'])
+					for subject in SUBJECTS:
+						if subject in homework:
+							if homework[subject]['deveres'] != []:
+								reply_deveres = ''
+								for dever in homework[subject]['deveres']:
+									reply_deveres += '*%s* - #%d\r\n%s\r\n\r\n' % (dever['data'], homework[subject]['deveres'].index(dever) + 1, dever['conteudo'])
+							
+								if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
+
+			del_regex = r"/apagar(deveres|materias)\s([\w]+)\s?([0-9]+)?$"
+			if re.search(del_regex, raw_message, flags=re.ASCII):
+				match = re.search(del_regex, raw_message, flags=re.UNICODE)
+				func = match.group(1)
+				if match.group(2) != None:
+					subject = match.group(2)
+					idx = int(match.group(3))
+					if func == 'deveres':
+						if idx != None:
+							if idx > len(homework[subject]['deveres']) or idx < 0:
+								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
+							else:
+								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
+								homework[subject]['deveres'].pop(idx)
+								bot.sendMessage(chat_id, 'O dever #%d de %s foi removido com sucesso!' % (idx, subject))
+								save_homework()
+						else:
+							print('%s removed all %s homework items' % (msg['from']['username'], subject))
+							homework[subject]['deveres'].clear()
+							save_homework()
+							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
+					elif func == 'materias':
+						if idx != None:
+							if idx > len(homework[subject]['materias']) or idx < 0:
+								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
+							else:
+								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
+								homework[subject]['materias'].pop(idx)
+								bot.sendMessage(chat_id, 'O dever #%d de %s foi removido com sucesso!' % (idx, subject))
+								save_homework()
+						else:
+							print('%s removed all %s homework items' % (msg['from']['username'], subject))
+							homework[subject]['materias'].clear()
+							save_homework()
+							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
+				else:
+					bot.sendMessage('Exemplo de uso:\r\n*/apagardeveres* historia 1 - apaga o primeiro item na lista de deveres de história\r\n*/apagardeveres* historia - apaga todos os deveres de história\r\n*/apagarmaterias* historia 1 - apaga o primeiro item na lista de matérias de história\r\n*/apagarmaterias* historia - apaga todas as matérias de história')
 
 
 app = Flask(__name__)
