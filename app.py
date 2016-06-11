@@ -128,16 +128,16 @@ def handle(msg):
 							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
 					elif func == 'materias':
 						if idx != None:
-							if idx > len(homework[subject]['materias']) or idx < 0:
+							if idx > len(homework[subject]['provas']) or idx < 0:
 								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
 							else:
 								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
-								homework[subject]['materias'].pop(idx-1)
+								homework[subject]['provas'].pop(idx-1)
 								bot.sendMessage(chat_id, 'O dever #%d de %s foi removido com sucesso!' % (idx, subject))
 								save_homework()
 						else:
 							print('%s removed all %s homework items' % (msg['from']['username'], subject))
-							homework[subject]['materias'].clear()
+							homework[subject]['provas'].clear()
 							save_homework()
 							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
 				else:
