@@ -68,7 +68,7 @@ def handle(msg):
 							save_homework()
 						elif func == 'amateria':
 							materia = {}
-							materia['data'] = dever['data'] = today.strftime("%d/%m/%Y")
+							materia['data'] = today.strftime("%d/%m/%Y")
 							materia['conteudo'] = match.group(3)
 							homework[subject]['provas'].append(materia)
 
