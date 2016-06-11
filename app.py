@@ -114,7 +114,7 @@ def handle(msg):
 					idx = int(match.group(3)) if match.group(3) != None else None
 					if func == 'deveres':
 						if idx != None:
-							if idx > len(homework[subject]['deveres']) or idx < 0:
+							if idx > len(homework[subject]['deveres']) or idx <= 0:
 								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
 							else:
 								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
@@ -128,7 +128,7 @@ def handle(msg):
 							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
 					elif func == 'materias':
 						if idx != None:
-							if idx > len(homework[subject]['provas']) or idx < 0:
+							if idx > len(homework[subject]['provas']) or idx <= 0:
 								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
 							else:
 								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
@@ -141,7 +141,7 @@ def handle(msg):
 							save_homework()
 							bot.sendMessage(chat_id, 'As matérias de %s foram removidas com sucesso!' % (subject))
 				else:
-					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/apagardeveres* historia 1 - apaga o primeiro item na lista de deveres de história\r\n*/apagardeveres* historia - apaga todos os deveres de história\r\n*/apagarmaterias* historia 1 - apaga o primeiro item na lista de matérias de história\r\n*/apagarmaterias* historia - apaga todas as matérias de história')
+					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/apagardeveres* historia 1 - apaga o primeiro item na lista de deveres de história\r\n*/apagardeveres* historia - apaga todos os deveres de história\r\n*/apagarmaterias* historia 1 - apaga o primeiro item na lista de matérias de história\r\n*/apagarmaterias* historia - apaga todas as matérias de história', 'Markdown')
 
 
 app = Flask(__name__)
