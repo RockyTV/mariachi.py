@@ -24,6 +24,12 @@ is_openshift = 'OPENSHIFT_PYTHON_IP' in os.environ
 if is_openshift: homework_path = os.path.join(os.path.expanduser('~'), 'app-root/data/homework.pickle')
 else: homework_path = 'homework.pickle'
 
+def init_homework():
+	homework.clear()
+	homework['version'] = '1.0'
+	for subject in SUBJECTS:
+		homework[subject]['provas'] = {}
+		homework[subject]['deveres'] = []
 def save_homework():
 	with open(homework_path, 'wb') as f:
 		pickle.dump(homework, f, protocol=3)
@@ -51,9 +57,13 @@ def handle(msg):
 							bot.sendMessage(chat_id, u'Matéria inválida. Conheço as seguintes matérias: %s' % ', '.join(['_%s_' % str(x) for x in SUBJECTS]), 'Markdown')
 						else:
 							today = date.today()
-							formatted_string = '*%s*\r\n%s\r\n\r\n' % (today.strftime("%d/%m/%Y"), match.group(3))
-							if subject in homework: homework[subject] += formatted_string
-							else: homework[subject] = formatted_string
+
+							dever = {}
+							dever['data'] = today.strftime("%d/%m/%Y")
+							dever['conteudo'] = match.group(3)
+							homework[subject]['deveres'].append(dever)
+							print (homework[subject]['deveres'])
+
 							print ('%s added %s homework' % (msg['from']['username'], subject))
 							bot.sendMessage(chat_id, 'Dever de %s adicionado!' % subject)
 							save_homework()
@@ -62,12 +72,23 @@ def handle(msg):
 						subject = match.group(2)
 						if subject in homework:
 							print ('%s requested %s homeworks' % (msg['from']['username'], subject))
-							bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, homework[subject]), 'Markdown')
+
+							reply_deveres = ''
+							for dever in homework[subject]['deveres']:
+								reply_deveres += '*%s*\r\n%s\r\n\r\n' % (dever['data'], dever['conteudo'])
+							
+							if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
 					else:
 						print ('%s requested all homeworks' % msg['from']['username'])
-						for subject in homework:
-							if homework[subject] != None:
-								bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, homework[subject]), 'Markdown')
+						for s in SUBJECTS:
+							if s in homework:
+								if homework[s]['deveres'] != []:
+									reply_deveres = ''
+									for dever in homework[subject]['deveres']:
+										reply_deveres += '*%s*\r\n%s\r\n\r\n' % (dever['data'], dever['conteudo'])
+							
+									if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (s, reply_deveres), 'Markdown')
+
 				elif cmd == 'del':
 					if match.group(2) != None:
 						subject = match.group(2)
@@ -83,6 +104,7 @@ def handle(msg):
 app = Flask(__name__)
 bot = telepot.Bot(os.environ['TELEGRAM_TOKEN'])
 update_queue = Queue()
+init_homework()
 load_homework()
 
 bot.message_loop(handle, source=update_queue)
