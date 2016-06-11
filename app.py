@@ -111,7 +111,7 @@ def handle(msg):
 				func = match.group(1)
 				if match.group(2) != None:
 					subject = match.group(2)
-					idx = int(match.group(3))
+					if match.group(3) != None: idx = int(match.group(3))
 					if func == 'deveres':
 						if idx != None:
 							if idx > len(homework[subject]['deveres']) or idx < 0:
