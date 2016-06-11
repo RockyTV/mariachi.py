@@ -76,7 +76,7 @@ def handle(msg):
 							save_homework()
 
 				else:
-					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/novodever* historia Explicar por quê o Jonathan é o melhor professor\r\n*/novamateria* historia Império Romano')
+					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/novodever* historia Explicar por quê o Jonathan é o melhor professor\r\n*/novamateria* historia Império Romano', 'Markdown')
 			list_regex = r"/listar(deveres|materias)\s?([\w]+)?$"
 			if re.search(list_regex, raw_message, flags=re.ASCII):
 				match = re.search(list_regex, raw_message, flags=re.UNICODE)
@@ -133,13 +133,13 @@ def handle(msg):
 							else:
 								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
 								homework[subject]['provas'].pop(idx-1)
-								bot.sendMessage(chat_id, 'O dever #%d de %s foi removido com sucesso!' % (idx, subject))
+								bot.sendMessage(chat_id, 'A matéria #%d de %s foi removida com sucesso!' % (idx, subject))
 								save_homework()
 						else:
 							print('%s removed all %s homework items' % (msg['from']['username'], subject))
 							homework[subject]['provas'].clear()
 							save_homework()
-							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
+							bot.sendMessage(chat_id, 'As matérias de %s foram removidas com sucesso!' % (subject))
 				else:
 					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/apagardeveres* historia 1 - apaga o primeiro item na lista de deveres de história\r\n*/apagardeveres* historia - apaga todos os deveres de história\r\n*/apagarmaterias* historia 1 - apaga o primeiro item na lista de matérias de história\r\n*/apagarmaterias* historia - apaga todas as matérias de história')
 
