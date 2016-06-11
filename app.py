@@ -43,7 +43,7 @@ def handle(msg):
 	content_type, chat_type, chat_id = telepot.glance(msg)
 
 	if content_type == 'text':
-		if chat_id == GRUPO_SALA:
+		if chat_id == GRUPO_SALA or chat_id == -126875187:
 			raw_message = msg['text'].strip()
 			regex = r"^/dever\s?(add|del|list|help)?\s?([\w]+)?\s?(.+)?$"
 			if re.search(regex, raw_message, flags=re.ASCII):
@@ -86,7 +86,7 @@ def handle(msg):
 								if homework[subject]['deveres'] != []:
 									reply_deveres = ''
 									for dever in homework[subject]['deveres']:
-										reply_deveres += '*%s* (item #d)\r\n%s\r\n\r\n' % (dever['data'], homework[subject]['deveres'].index(dever) + 1, dever['conteudo'])
+										reply_deveres += '*%s* (item #%d)\r\n%s\r\n\r\n' % (dever['data'], homework[subject]['deveres'].index(dever) + 1, dever['conteudo'])
 							
 									if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
 
