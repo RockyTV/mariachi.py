@@ -28,7 +28,8 @@ def init_homework():
 	homework.clear()
 	homework['version'] = '1.0'
 	for subject in SUBJECTS:
-		homework[subject]['provas'] = {}
+		homework[subject] = {}
+		homework[subject]['provas'] = []
 		homework[subject]['deveres'] = []
 def save_homework():
 	with open(homework_path, 'wb') as f:
