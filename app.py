@@ -81,26 +81,29 @@ def handle(msg):
 			if re.search(list_regex, raw_message, flags=re.ASCII):
 				match = re.search(list_regex, raw_message, flags=re.UNICODE)
 				func = match.group(1)
+				if func == 'materias': func = 'provas'
+				text_deveres = 'Deveres'
+				if func == 'provas': text_deveres = 'Matérias'
 				if match.group(2) != None:
 					subject = match.group(2)
 					if subject in homework:
 						print ('%s requested %s homeworks' % (msg['from']['username'], subject))
 
 						reply_deveres = ''
-						for dever in homework[subject]['deveres']:
+						for dever in homework[subject][func]:
 							reply_deveres += '*%s*\r\n%s\r\n\r\n' % (dever['data'], dever['conteudo'])
 							
-							if reply_deveres != '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
+							if reply_deveres != '': bot.sendMessage(chat_id, '%s de %s:\r\n%s' % (text_deveres, subject, reply_deveres), 'Markdown')
 				else:
 					print ('%s requested all homeworks' % msg['from']['username'])
 					for subject in SUBJECTS:
 						if subject in homework:
-							if homework[subject]['deveres'] != []:
+							if homework[subject][func] != []:
 								reply_deveres = ''
-								for dever in homework[subject]['deveres']:
-									reply_deveres += '*%s* - #%d\r\n%s\r\n\r\n' % (dever['data'], homework[subject]['deveres'].index(dever) + 1, dever['conteudo'])
+								for dever in homework[subject][func]:
+									reply_deveres += '*%s* - #%d\r\n%s\r\n\r\n' % (dever['data'], homework[subject][func].index(dever) + 1, dever['conteudo'])
 							
-								if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
+								if reply_deveres is not '': bot.sendMessage(chat_id, '%s de %s:\r\n%s' % (text_deveres, subject, reply_deveres), 'Markdown')
 
 			del_regex = r"/apagar(deveres|materias)\s([\w]+)\s?([0-9]+)?$"
 			if re.search(del_regex, raw_message, flags=re.ASCII):
