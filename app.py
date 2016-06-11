@@ -76,7 +76,7 @@ def handle(msg):
 							save_homework()
 
 				else:
-					bot.sendMessage('Exemplo de uso:\r\n*/novodever* historia Explicar por quê o Jonathan é o melhor professor\r\n*/novamateria* historia Império Romano')
+					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/novodever* historia Explicar por quê o Jonathan é o melhor professor\r\n*/novamateria* historia Império Romano')
 			list_regex = r"/listar(deveres|materias)\s?([\w]+)?$"
 			if re.search(list_regex, raw_message, flags=re.ASCII):
 				match = re.search(list_regex, raw_message, flags=re.UNICODE)
@@ -138,7 +138,7 @@ def handle(msg):
 							save_homework()
 							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
 				else:
-					bot.sendMessage('Exemplo de uso:\r\n*/apagardeveres* historia 1 - apaga o primeiro item na lista de deveres de história\r\n*/apagardeveres* historia - apaga todos os deveres de história\r\n*/apagarmaterias* historia 1 - apaga o primeiro item na lista de matérias de história\r\n*/apagarmaterias* historia - apaga todas as matérias de história')
+					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/apagardeveres* historia 1 - apaga o primeiro item na lista de deveres de história\r\n*/apagardeveres* historia - apaga todos os deveres de história\r\n*/apagarmaterias* historia 1 - apaga o primeiro item na lista de matérias de história\r\n*/apagarmaterias* historia - apaga todas as matérias de história')
 
 
 app = Flask(__name__)
