@@ -118,7 +118,7 @@ def handle(msg):
 								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
 							else:
 								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
-								homework[subject]['deveres'].pop(idx)
+								homework[subject]['deveres'].pop(idx-1)
 								bot.sendMessage(chat_id, 'O dever #%d de %s foi removido com sucesso!' % (idx, subject))
 								save_homework()
 						else:
@@ -132,7 +132,7 @@ def handle(msg):
 								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
 							else:
 								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
-								homework[subject]['materias'].pop(idx)
+								homework[subject]['materias'].pop(idx-1)
 								bot.sendMessage(chat_id, 'O dever #%d de %s foi removido com sucesso!' % (idx, subject))
 								save_homework()
 						else:
