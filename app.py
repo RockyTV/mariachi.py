@@ -81,14 +81,14 @@ def handle(msg):
 							if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
 					else:
 						print ('%s requested all homeworks' % msg['from']['username'])
-						for s in SUBJECTS:
-							if s in homework:
-								if homework[s]['deveres'] != []:
+						for subject in SUBJECTS:
+							if subject in homework:
+								if homework[subject]['deveres'] != []:
 									reply_deveres = ''
 									for dever in homework[subject]['deveres']:
 										reply_deveres += '*%s*\r\n%s\r\n\r\n' % (dever['data'], dever['conteudo'])
 							
-									if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (s, reply_deveres), 'Markdown')
+									if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
 
 				elif cmd == 'del':
 					if match.group(2) != None:
@@ -118,6 +118,10 @@ def pass_update():
 @app.route('/')
 def hello_world():
 	return 'It works!'
+
+@app.route('/deveres')
+def show_homework():
+	return str(homework)
 
 if __name__ == '__main__':
 	if not 'OPENSHIFT_PYTHON_IP' in os.environ: ip = '127.0.0.1'
