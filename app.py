@@ -86,7 +86,7 @@ def handle(msg):
 								if homework[subject]['deveres'] != []:
 									reply_deveres = ''
 									for dever in homework[subject]['deveres']:
-										reply_deveres += '*%s*\r\n%s\r\n\r\n' % (dever['data'], dever['conteudo'])
+										reply_deveres += '*%s* (item #d)\r\n%s\r\n\r\n' % (dever['data'], homework[subject]['deveres'].index(dever) + 1, dever['conteudo'])
 							
 									if reply_deveres is not '': bot.sendMessage(chat_id, 'Deveres de %s:\r\n%s' % (subject, reply_deveres), 'Markdown')
 
