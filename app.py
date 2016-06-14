@@ -46,7 +46,7 @@ def handle(msg):
 		if chat_id == GRUPO_SALA or chat_id == -126875187:
 			raw_message = msg['text'].strip()
 
-			add_regex = r"^/nov(odever|amateria)\s?([\w]+)?\s?(.+)?$"
+			add_regex = r"^/nov(odever|amateria)(?:@mariachi_bot)?\s?([\w]+)?\s?(.+)?$"
 			if re.search(add_regex, raw_message, flags=re.ASCII):
 				match = re.search(add_regex, raw_message, flags=re.UNICODE)
 				func = match.group(1)
@@ -77,7 +77,7 @@ def handle(msg):
 
 				else:
 					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/novodever* historia Explicar por quê o Jonathan é o melhor professor\r\n*/novamateria* historia Império Romano', 'Markdown')
-			list_regex = r"/listar(deveres|materias)\s?([\w]+)?$"
+			list_regex = r"/listar(deveres|materias)(?:@mariachi_bot)?\s?([\w]+)?$"
 			if re.search(list_regex, raw_message, flags=re.ASCII):
 				match = re.search(list_regex, raw_message, flags=re.UNICODE)
 				func = match.group(1)
@@ -105,7 +105,7 @@ def handle(msg):
 							
 								if reply_deveres is not '': bot.sendMessage(chat_id, '%s de %s:\r\n%s' % (text_deveres, subject, reply_deveres), 'Markdown')
 
-			del_regex = r"/apagar(deveres|materias)\s([\w]+)\s?([0-9]+)?$"
+			del_regex = r"/apagar(deveres|materias)(?:@mariachi_bot)?\s([\w]+)\s?([0-9]+)?$"
 			if re.search(del_regex, raw_message, flags=re.ASCII):
 				match = re.search(del_regex, raw_message, flags=re.UNICODE)
 				func = match.group(1)
