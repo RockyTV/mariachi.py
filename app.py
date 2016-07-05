@@ -63,7 +63,6 @@ def handle(msg):
 							dever['conteudo'] = match.group(3)
 							homework[subject]['deveres'].append(dever)
 
-							print ('%s added %s homework' % (msg['from']['username'], subject))
 							bot.sendMessage(chat_id, 'Dever de %s adicionado!' % subject)
 							save_homework()
 						elif func == 'amateria':
@@ -87,7 +86,6 @@ def handle(msg):
 				if match.group(2) != None:
 					subject = match.group(2)
 					if subject in homework:
-						print ('%s requested %s homeworks' % (msg['from']['username'], subject))
 
 						reply_deveres = ''
 						for dever in homework[subject][func]:
@@ -95,7 +93,6 @@ def handle(msg):
 							
 							if reply_deveres != '': bot.sendMessage(chat_id, '%s de %s:\r\n%s' % (text_deveres, subject, reply_deveres), 'Markdown')
 				else:
-					print ('%s requested all homeworks' % msg['from']['username'])
 					for subject in SUBJECTS:
 						if subject in homework:
 							if homework[subject][func] != []:
@@ -117,12 +114,10 @@ def handle(msg):
 							if idx > len(homework[subject]['deveres']) or idx <= 0:
 								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
 							else:
-								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
 								homework[subject]['deveres'].pop(idx-1)
 								bot.sendMessage(chat_id, 'O dever #%d de %s foi removido com sucesso!' % (idx, subject))
 								save_homework()
 						else:
-							print('%s removed all %s homework items' % (msg['from']['username'], subject))
 							homework[subject]['deveres'].clear()
 							save_homework()
 							bot.sendMessage(chat_id, 'Os deveres de %s foram removidos com sucesso!' % (subject))
@@ -131,12 +126,10 @@ def handle(msg):
 							if idx > len(homework[subject]['provas']) or idx <= 0:
 								bot.sendMessage(chat_id, 'O item especificado não existe na lista.')
 							else:
-								print ('%s removed %s item #%d' % (msg['from']['username'], subject, idx))
 								homework[subject]['provas'].pop(idx-1)
 								bot.sendMessage(chat_id, 'A matéria #%d de %s foi removida com sucesso!' % (idx, subject))
 								save_homework()
 						else:
-							print('%s removed all %s homework items' % (msg['from']['username'], subject))
 							homework[subject]['provas'].clear()
 							save_homework()
 							bot.sendMessage(chat_id, 'As matérias de %s foram removidas com sucesso!' % (subject))
