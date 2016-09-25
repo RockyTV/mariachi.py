@@ -151,6 +151,8 @@ update_queue = Queue()
 init_homework()
 load_homework()
 
+SECRET_URL = '/bot' + os.environ['TELEGRAM_TOKEN']
+
 bot.message_loop({
     'chat': on_chat_message,
     'callback_query': on_callback_query,
@@ -158,7 +160,7 @@ bot.message_loop({
     'chosen_inline_result': on_chosen_inline_result
 }, source=update_queue)
 
-@app.route('/hook', methods=['GET', 'POST'])
+@app.route(SECRET_URL, methods=['GET', 'POST'])
 def pass_update():
 	update_queue.put(request.data)
 	return 'OK'
@@ -174,5 +176,6 @@ def show_homework():
 if __name__ == '__main__':
 	if not 'OPENSHIFT_PYTHON_IP' in os.environ: ip = '127.0.0.1'
 	else: ip = os.environ['OPENSHIFT_PYTHON_IP']
-	bot.setWebhook('https://pymariachi-xinayder.rhcloud.com/hook')
+	bot.setWebhook()
+	bot.setWebhook('https://pymariachi-xinayder.rhcloud.com' + SECRET_URL)
 	app.run(host=ip, port=8080, debug=True)
