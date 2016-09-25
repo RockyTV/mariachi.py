@@ -93,14 +93,15 @@ def handle(msg):
 							
 							if reply_deveres != '': bot.sendMessage(chat_id, '%s de %s:\r\n%s' % (text_deveres, subject, reply_deveres), 'Markdown')
 				else:
+					reply_deveres = ''
 					for subject in SUBJECTS:
 						if subject in homework:
 							if homework[subject][func] != []:
-								reply_deveres = ''
+								reply_deveres += '*%s de %s*:\r\n' % (text_deveres, subject)
 								for dever in homework[subject][func]:
 									reply_deveres += '*%s* - #%d\r\n%s\r\n\r\n' % (dever['data'], homework[subject][func].index(dever) + 1, dever['conteudo'])
 							
-								if reply_deveres is not '': bot.sendMessage(chat_id, '%s de %s:\r\n%s' % (text_deveres, subject, reply_deveres), 'Markdown')
+					if reply_deveres is not '': bot.sendMessage(chat_id, reply_deveres, 'Markdown')
 
 			del_regex = r"/apagar(deveres|materias)(?:@mariachi_bot)?\s([\w]+)\s?([0-9]+)?$"
 			if re.search(del_regex, raw_message, flags=re.ASCII):
