@@ -39,7 +39,7 @@ def load_homework():
 		with open(homework_path, 'rb') as f:
 			homework.update(pickle.load(f))
 
-def handle(msg):
+def on_chat_message(msg):
 	content_type, chat_type, chat_id = telepot.glance(msg)
 
 	if content_type == 'text':
@@ -138,15 +138,27 @@ def handle(msg):
 					bot.sendMessage(chat_id, 'Exemplo de uso:\r\n*/apagardeveres* historia 1 - apaga o primeiro item na lista de deveres de história\r\n*/apagardeveres* historia - apaga todos os deveres de história\r\n*/apagarmaterias* historia 1 - apaga o primeiro item na lista de matérias de história\r\n*/apagarmaterias* historia - apaga todas as matérias de história', 'Markdown')
 
 
+def on_callback_query(msg):
+    query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
+def on_inline_query(msg):
+    query_id, from_id, query_string = telepot.glance(msg, flavor='inline_query')
+def on_chosen_inline_result(msg):
+    result_id, from_id, query_string = telepot.glance(msg, flavor='chosen_inline_result')
+
 app = Flask(__name__)
 bot = telepot.Bot(os.environ['TELEGRAM_TOKEN'])
 update_queue = Queue()
 init_homework()
 load_homework()
 
-bot.message_loop(handle, source=update_queue)
+bot.message_loop({
+    'chat': on_chat_message,
+    'callback_query': on_callback_query,
+    'inline_query': on_inline_query,
+    'chosen_inline_result': on_chosen_inline_result
+}, source=update_queue)
 
-@app.route('/hook', methods=['POST'])
+@app.route('/hook', methods=['GET', 'POST'])
 def pass_update():
 	update_queue.put(request.data)
 	return 'OK'
