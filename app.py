@@ -176,6 +176,8 @@ def show_homework():
 if __name__ == '__main__':
 	if not 'OPENSHIFT_PYTHON_IP' in os.environ: ip = '127.0.0.1'
 	else: ip = os.environ['OPENSHIFT_PYTHON_IP']
+	time.sleep(5)
 	bot.setWebhook()
+	time.sleep(5)
 	bot.setWebhook('https://pymariachi-xinayder.rhcloud.com' + SECRET_URL)
 	app.run(host=ip, port=8080, debug=True)
