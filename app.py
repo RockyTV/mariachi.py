@@ -101,6 +101,7 @@ def on_chat_message(msg):
 								for dever in homework[subject][func]:
 									reply_deveres += '*%s* - #%d\r\n%s\r\n\r\n' % (dever['data'], homework[subject][func].index(dever) + 1, dever['conteudo'])
 							
+								reply_deveres += '------------\r\n'
 					if reply_deveres is not '': bot.sendMessage(chat_id, reply_deveres, 'Markdown')
 
 			del_regex = r"/apagar(deveres|materias)(?:@mariachi_bot)?\s([\w]+)\s?([0-9]+)?$"
