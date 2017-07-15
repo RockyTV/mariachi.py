@@ -54,6 +54,10 @@ def on_chat_message(msg):
 
             bot.sendMessage(chat_id, 'Select a command below', reply_to_message_id=msg['message_id'], reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboards))
 
+        else:
+            for cmd in registered_commands:
+                cmd.on_chat_message(msg)
+
 def on_callback_query(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print(msg)
