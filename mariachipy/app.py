@@ -3,11 +3,13 @@ This script runs the application using a development server.
 It contains the definition of routes and views for the application.
 """
 import os
+import re
 import time
 import telepot
 import importlib
 from flask import Flask, request
 from telepot.loop import MessageLoop
+from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 
 if not 'TELEGRAM_TOKEN' in os.environ:
     raise(RuntimeError('Missing Telegram token'))
@@ -20,7 +22,7 @@ registered_commands = []
 
 def register_commands():
     import types
-    to_register = ['Ping', 'Notes']
+    to_register = ['Ping', 'SchoolNotes']
 
     def import_from(module, name):
         module = importlib.import_module(module)
@@ -37,12 +39,33 @@ def register_commands():
         register_command(import_from('commands', command))
 
 def on_chat_message(msg):
+    content_type, chat_type, chat_id = telepot.glance(msg)
+
+    if content_type == 'text':
+        raw_message = msg['text'].strip()
+        command = r"^(?:@%s)$" % bot_username
+
+        if re.search(command, raw_message, flags=re.ASCII):
+            keyboards = [[]]
+            for cmd in registered_commands:
+                class_name = cmd.__class__.__name__
+                alias = cmd.get_alias() if hasattr(cmd, 'get_alias') else class_name
+                keyboards[0].append(InlineKeyboardButton(text=alias, callback_data='%s_menu' % class_name.lower()))
+
+            bot.sendMessage(chat_id, 'Select a command below', reply_to_message_id=msg['message_id'], reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboards))
+
+def on_callback_query(msg):
+    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     print(msg)
-    for c in registered_commands:
-        c.on_chat_message(msg)
+
+    for cmd in registered_commands:
+        if query_data.startswith(cmd.__class__.__name__.lower()):
+            if from_id == msg['message']['reply_to_message']['from']['id']:
+                cmd.on_callback_query(msg)
 
 MessageLoop(bot, {
-    'chat': on_chat_message
+    'chat': on_chat_message,
+    'callback_query': on_callback_query
 }).run_as_thread()
 
 if __name__ == '__main__':
