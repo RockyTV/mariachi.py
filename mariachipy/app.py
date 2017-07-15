@@ -14,6 +14,7 @@ if not 'TELEGRAM_TOKEN' in os.environ:
 
 bot = telepot.Bot(os.environ['TELEGRAM_TOKEN'])
 bot.deleteWebhook()
+bot_username = ''
 
 registered_commands = []
 
@@ -29,7 +30,7 @@ def register_commands():
         try:
             registered_commands.index(cmd)
         except ValueError:
-            registered_commands.append(cmd(bot))
+            registered_commands.append(cmd(bot, bot_username))
             print('Registered command module:', cmd.__name__)
 
     for command in to_register:
@@ -45,7 +46,7 @@ MessageLoop(bot, {
 }).run_as_thread()
 
 if __name__ == '__main__':
-    print(bot.getMe())
+    bot_username = bot.getMe()['username']
     register_commands() 
 
 while 1:
