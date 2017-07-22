@@ -340,7 +340,7 @@ class SchoolNotes():
                                               ) if 'username' in msg['from'] else msg['from']['first_name']
                     subject_name = self.notes[chat_id]['subjects'][subject]['name']
 
-                    try:
+                    if data[22:].isdigit():
                         note_idx = int(data[22:])
 
                         del self.notes[chat_id]['subjects'][subject]['materia_provas'][note_idx]
@@ -348,12 +348,12 @@ class SchoolNotes():
                             note_idx, subject_name), reply_markup=None)
                         self.bot.sendMessage(
                             chat_id, 'O usuário %s apagou um conteúdo de %s.' % (user_name, subject_name))
-                    except ValueError:
-                        if data[22:] == "all":
+                    else:
+                        if data[22:] == 'all':
                             self.notes[chat_id]['subjects'][subject]['materia_provas'].clear(
                             )
                             self.bot.editMessageText(
-                                msg_id, 'Conteúdo de %s apagado com sucesso!', subject_name, reply_markup=None)
+                                msg_id, 'Conteúdo de %s apagado com sucesso!' % subject_name, reply_markup=None)
                             self.bot.sendMessage(chat_id, 'O usuário %s apagou todos os conteúdos de %s.' % (
                                 user_name, subject_name))
 
@@ -361,14 +361,19 @@ class SchoolNotes():
                     if msg_id != None:
                         name = self.notes[chat_id]['subjects'][cb_data_subjects_m[data]]['name']
                         subject = self.notes[chat_id]['subjects'][cb_data_subjects_m[data]]
+                        tag = cb_data_subjects_m[data].lower()
 
                         content_len = len(subject['materia_provas'])
 
                         m_reply = 'Selecione o conteúdo de %s para apagar:\r\n' % name if content_len > 0 else '*Não há conteúdo de %s.*' % name
 
                         if content_len > 0:
-                            keyboards = [InlineKeyboardButton(
-                                text='Cancelar', callback_data='%s_menu' % self.class_name)]
+                            keyboards = [InlineKeyboardButton(text='Voltar', callback_data='%s_del_m' % self.class_name),
+                                         InlineKeyboardButton(
+                                             text='Cancelar', callback_data='%s_menu' % self.class_name),
+                                         InlineKeyboardButton(
+                                             text='Todas', callback_data='%s_del_m_%s_all' % (self.class_name, tag)),
+                                         ]
 
                             for content in subject['materia_provas']:
                                 note_date = date.fromtimestamp(
