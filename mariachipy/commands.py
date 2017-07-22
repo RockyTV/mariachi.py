@@ -1,10 +1,12 @@
 import os
 import pickle
 import re
-import telepot
+from datetime import date, datetime
 
-from datetime import datetime, date
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ForceReply
+import telepot
+from telepot.namedtuple import (ForceReply, InlineKeyboardButton,
+                                InlineKeyboardMarkup, KeyboardButton,
+                                ReplyKeyboardMarkup, ReplyKeyboardRemove)
 
 
 class Ping():
