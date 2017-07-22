@@ -325,7 +325,9 @@ class SchoolNotes():
                             )
                             self.bot.editMessageText(
                                 msg_id, t_reply, parse_mode='Markdown', reply_markup=keyboard)
-
+                        else:
+                            self.bot.editMessageText(
+                                msg_id, t_reply, parse_mode='Markdown')
             # Delete tests/exams content
             elif data == '%s_del_m' % self.class_name:
                 if msg_id != None:
@@ -354,7 +356,7 @@ class SchoolNotes():
                         note_idx = int(data[22:])
 
                         del self.notes[chat_id]['subjects'][subject]['materia_provas'][note_idx]
-                        self.bot.editMessageText(msg_id, 'Conteúdo nº%d de %s apagado com sucesso!' % (
+                        self.bot.editMessageText(msg_id, 'Conteúdo nº %d de %s apagado com sucesso!' % (
                             note_idx, subject_name), reply_markup=None)
                         self.bot.sendMessage(
                             chat_id, 'O usuário %s apagou um conteúdo de %s.' % (user_name, subject_name))
@@ -380,10 +382,10 @@ class SchoolNotes():
                         if content_len > 0:
                             keyboards = [InlineKeyboardButton(text='Voltar', callback_data='%s_del_m' % self.class_name),
                                          InlineKeyboardButton(
-                                             text='Cancelar', callback_data='%s_menu' % self.class_name),
-                                         InlineKeyboardButton(
-                                             text='Todas', callback_data='%s_del_m_%s_all' % (self.class_name, tag)),
-                                         ]
+                                text='Cancelar', callback_data='%s_menu' % self.class_name),
+                                InlineKeyboardButton(
+                                text='Todos', callback_data='%s_del_m_%s_all' % (self.class_name, tag)),
+                            ]
 
                             for content in subject['materia_provas']:
                                 note_date = date.fromtimestamp(
@@ -404,6 +406,10 @@ class SchoolNotes():
                             )
                             self.bot.editMessageText(
                                 msg_id, m_reply, parse_mode='Markdown', reply_markup=keyboard)
+                        else:
+                            self.bot.editMessageText(
+                                msg_id, m_reply, parse_mode='Markdown')
+
             # List homeworks or tests/exams content
             elif data == '%s_list' % self.class_name:
                 if msg_id != None:
