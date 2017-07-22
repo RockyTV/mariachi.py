@@ -6,6 +6,7 @@ import telepot
 from datetime import datetime, date
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, ForceReply
 
+
 class Ping():
     bot = telepot.Bot
     bot_username = ''
@@ -26,6 +27,7 @@ class Ping():
 
         if data == '%s_menu' % self.__class__.__name__.lower():
             self.bot.editMessageText(msg_id, 'Pong!', reply_markup=None)
+
 
 class SchoolNotes():
     bot = telepot.Bot
@@ -48,7 +50,8 @@ class SchoolNotes():
                 'subjects': {}
             }
         }
-        self.pickle_path = os.path.join(os.path.expanduser('~'), 'app-root/data/notes.pickle') if 'OPENSHIFT_PYTHON_IP' in os.environ else 'notes.pickle'
+        self.pickle_path = os.path.join(os.path.expanduser(
+            '~'), 'app-root/data/notes.pickle') if 'OPENSHIFT_PYTHON_IP' in os.environ else 'notes.pickle'
         self.prev_inline_query = None
         self.class_name = self.__class__.__name__.lower()
         self.add_lock = {}
@@ -82,7 +85,6 @@ class SchoolNotes():
             #-126875187 test
             #-1001045780811 live
 
-
         if os.path.exists(self.pickle_path):
             with open(self.pickle_path, 'rb') as f:
                 self.notes.update(pickle.load(f))
@@ -99,7 +101,8 @@ class SchoolNotes():
     def on_chat_message(self, msg):
         # Check if the message the user should reply to is the last one from the callback query
         if 'reply_to_message' in msg:
-            chat_id, msg_id = (msg['reply_to_message']['chat']['id'], msg['reply_to_message']['message_id'])
+            chat_id, msg_id = (msg['reply_to_message']['chat']
+                               ['id'], msg['reply_to_message']['message_id'])
 
             if self.add_lock != None:
                 reply_to = (chat_id, msg_id)
@@ -108,16 +111,20 @@ class SchoolNotes():
                     if chat_id == self.school_group:
 
                         tarefa = {
-                                'date_added': datetime.today().timestamp(),
-                                'text': msg['text']
-                            }
+                            'date_added': datetime.today().timestamp(),
+                            'text': msg['text']
+                        }
 
-                        user_name = '%s (@%s)' % (msg['from']['first_name'], msg['from']['username']) if 'username' in msg['from'] else msg['from']['first_name']
+                        user_name = '%s (@%s)' % (
+                            msg['from']['first_name'], msg['from']['username']) if 'username' in msg['from'] else msg['from']['first_name']
                         subject_name = self.notes[chat_id]['subjects'][self.add_lock['subject']]['name']
 
-                        self.notes[chat_id]['subjects'][self.add_lock['subject']]['tarefas'].append(tarefa)
-                        self.bot.editMessageText(self.add_lock['id'], 'Tarefa de casa adicionada com sucesso!')
-                        self.bot.sendMessage(chat_id, 'O usuário %s adicionou uma tarefa de casa de %s.' % (user_name, subject_name))
+                        self.notes[chat_id]['subjects'][self.add_lock['subject']]['tarefas'].append(
+                            tarefa)
+                        self.bot.editMessageText(
+                            self.add_lock['id'], 'Tarefa de casa adicionada com sucesso!')
+                        self.bot.sendMessage(chat_id, 'O usuário %s adicionou uma tarefa de casa de %s.' % (
+                            user_name, subject_name))
                         self.save_notes()
 
     def on_callback_query(self, msg):
@@ -132,42 +139,54 @@ class SchoolNotes():
             cb_data_subjects_t = {}
             cb_data_subjects_m = {}
             for tag in self.notes[chat_id]['subjects']:
-                cb_data_subjects_t['%s_list_t_%s' % (self.class_name, tag.lower())] = tag
-                cb_data_subjects_m['%s_list_m_%s' % (self.class_name, tag.lower())] = tag
-                cb_data_subjects_t['%s_add_t_%s' % (self.class_name, tag.lower())] = tag
-                cb_data_subjects_m['%s_add_m_%s' % (self.class_name, tag.lower())] = tag
-                cb_data_subjects_t['%s_del_t_%s' % (self.class_name, tag.lower())] = tag
-                cb_data_subjects_m['%s_del_m_%s' % (self.class_name, tag.lower())] = tag
+                cb_data_subjects_t['%s_list_t_%s' %
+                                   (self.class_name, tag.lower())] = tag
+                cb_data_subjects_m['%s_list_m_%s' %
+                                   (self.class_name, tag.lower())] = tag
+                cb_data_subjects_t['%s_add_t_%s' %
+                                   (self.class_name, tag.lower())] = tag
+                cb_data_subjects_m['%s_add_m_%s' %
+                                   (self.class_name, tag.lower())] = tag
+                cb_data_subjects_t['%s_del_t_%s' %
+                                   (self.class_name, tag.lower())] = tag
+                cb_data_subjects_m['%s_del_m_%s' %
+                                   (self.class_name, tag.lower())] = tag
 
             # Handle callback query for module
             if data == '%s_menu' % self.class_name:
                 keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                                    [InlineKeyboardButton(text='Adicionar', callback_data='%s_add' % self.class_name),
-                                     InlineKeyboardButton(text='Listar', callback_data='%s_list' % self.class_name),
-                                     InlineKeyboardButton(text='Apagar', callback_data='%s_del' % self.class_name)],
-                               ])
-                self.bot.editMessageText(msg_id, 'O que deseja fazer com as anotações?', reply_markup=keyboard)
+                    [InlineKeyboardButton(text='Adicionar', callback_data='%s_add' % self.class_name),
+                     InlineKeyboardButton(
+                        text='Listar', callback_data='%s_list' % self.class_name),
+                     InlineKeyboardButton(text='Apagar', callback_data='%s_del' % self.class_name)],
+                ])
+                self.bot.editMessageText(
+                    msg_id, 'O que deseja fazer com as anotações?', reply_markup=keyboard)
 
             # Add homework or tests/exam content
             elif data == '%s_add' % self.class_name:
                 if msg_id != None:
                     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                            [InlineKeyboardButton(text='Conteúdo de prova', callback_data='%s_add_m' % self.class_name),
-                             InlineKeyboardButton(text='Tarefas de casa', callback_data='%s_add_t' % self.class_name)]
-                        ])
-                    self.bot.editMessageText(msg_id, 'O que deseja adicionar?', reply_markup=keyboard)
+                        [InlineKeyboardButton(text='Conteúdo de prova', callback_data='%s_add_m' % self.class_name),
+                         InlineKeyboardButton(text='Tarefas de casa', callback_data='%s_add_t' % self.class_name)]
+                    ])
+                    self.bot.editMessageText(
+                        msg_id, 'O que deseja adicionar?', reply_markup=keyboard)
 
             # Add homework
             elif data == '%s_add_t' % self.class_name:
                 if msg_id != None:
                     keyboards = []
                     for tag, content in self.notes[chat_id]['subjects'].items():
-                        keyboards.append(InlineKeyboardButton(text=content['name'], callback_data='%s_add_t_%s' % (self.class_name, tag.lower())))
+                        keyboards.append(InlineKeyboardButton(
+                            text=content['name'], callback_data='%s_add_t_%s' % (self.class_name, tag.lower())))
 
                     keyboards.sort()
 
-                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(keyboards[i:i+3] for i in range(0, len(keyboards), 3)))
-                    self.bot.editMessageText(msg_id, 'Escolha uma disciplina para adicionar tarefas de casa', reply_markup=keyboard)
+                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(
+                        keyboards[i:i + 3] for i in range(0, len(keyboards), 3)))
+                    self.bot.editMessageText(
+                        msg_id, 'Escolha uma disciplina para adicionar tarefas de casa', reply_markup=keyboard)
 
             # Add homework for given subject
             elif data.startswith('%s_add_t_' % self.class_name):
@@ -181,28 +200,33 @@ class SchoolNotes():
                         self.add_lock['subject'] = cb_data_subjects_t[data]
                         print(self.add_lock)
 
-                        self.bot.editMessageText(msg_id, reply_msg, parse_mode='Markdown', reply_markup=None)
+                        self.bot.editMessageText(
+                            msg_id, reply_msg, parse_mode='Markdown', reply_markup=None)
 
             # Delete homework or tests/exam content
             elif data == '%s_del' % self.class_name:
                 if msg_id != None:
                     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                            [InlineKeyboardButton(text='Conteúdo de prova', callback_data='%s_del_m' % self.class_name),
-                             InlineKeyboardButton(text='Tarefas de casa', callback_data='%s_del_t' % self.class_name)]
-                        ])
-                    self.bot.editMessageText(msg_id, 'O que deseja apagar?', reply_markup=keyboard)
+                        [InlineKeyboardButton(text='Conteúdo de prova', callback_data='%s_del_m' % self.class_name),
+                         InlineKeyboardButton(text='Tarefas de casa', callback_data='%s_del_t' % self.class_name)]
+                    ])
+                    self.bot.editMessageText(
+                        msg_id, 'O que deseja apagar?', reply_markup=keyboard)
 
             # Delete homework
             elif data == '%s_del_t' % self.class_name:
                 if msg_id != None:
                     keyboards = []
                     for tag, content in self.notes[chat_id]['subjects'].items():
-                        keyboards.append(InlineKeyboardButton(text=content['name'], callback_data='%s_del_t_%s' % (self.class_name, tag.lower())))
+                        keyboards.append(InlineKeyboardButton(
+                            text=content['name'], callback_data='%s_del_t_%s' % (self.class_name, tag.lower())))
 
                     keyboards.sort()
 
-                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(keyboards[i:i+3] for i in range(0, len(keyboards), 3)))
-                    self.bot.editMessageText(msg_id, 'Escolha uma disciplina para apagar tarefas de casa', reply_markup=keyboard)
+                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(
+                        keyboards[i:i + 3] for i in range(0, len(keyboards), 3)))
+                    self.bot.editMessageText(
+                        msg_id, 'Escolha uma disciplina para apagar tarefas de casa', reply_markup=keyboard)
 
             # Delete homework for given subject
             elif data.startswith('%s_del_t_' % self.class_name):
@@ -211,12 +235,15 @@ class SchoolNotes():
                     subject = cb_data_subjects_t[data[0:21]]
                     note_idx = int(data[22:])
 
-                    user_name = '%s (@%s)' % (msg['from']['first_name'], msg['from']['username']) if 'username' in msg['from'] else msg['from']['first_name']
+                    user_name = '%s (@%s)' % (msg['from']['first_name'], msg['from']['username']
+                                              ) if 'username' in msg['from'] else msg['from']['first_name']
                     subject_name = self.notes[chat_id]['subjects'][subject]['name']
 
                     del self.notes[chat_id]['subjects'][subject]['tarefas'][note_idx]
-                    self.bot.editMessageText(msg_id, 'Tarefa de %s apagada com sucesso!' % self.notes[chat_id]['subjects'][subject]['name'], reply_markup=None)
-                    self.bot.sendMessage(chat_id, 'O usuário %s apagou uma tarefa de casa de %s.' % (user_name, subject_name))
+                    self.bot.editMessageText(msg_id, 'Tarefa de %s apagada com sucesso!' %
+                                             self.notes[chat_id]['subjects'][subject]['name'], reply_markup=None)
+                    self.bot.sendMessage(chat_id, 'O usuário %s apagou uma tarefa de casa de %s.' % (
+                        user_name, subject_name))
 
                 if data in cb_data_subjects_t:
                     if msg_id != None:
@@ -229,55 +256,71 @@ class SchoolNotes():
 
                         if content_len > 0:
                             keyboards = [InlineKeyboardButton(text='Voltar', callback_data='%s_del_t' % self.class_name),
-                                         InlineKeyboardButton(text='Cancelar', callback_data='%s_menu' % self.class_name),
-                                         InlineKeyboardButton(text='Todas', callback_data='%s_del_t_all' % self.class_name),
+                                         InlineKeyboardButton(
+                                             text='Cancelar', callback_data='%s_menu' % self.class_name),
+                                         InlineKeyboardButton(
+                                             text='Todas', callback_data='%s_del_t_all' % self.class_name),
                                          ]
 
                             for content in subject['tarefas']:
-                                note_date = date.fromtimestamp(content['date_added'])
+                                note_date = date.fromtimestamp(
+                                    content['date_added'])
                                 note_index = subject['tarefas'].index(content)
-                                t_reply += ' - *#%d*, adicionada em *%s*: %s\r\n' % (note_index, note_date.strftime('%d/%m/%Y'), content['text'])
+                                t_reply += ' - *#%d*, adicionada em *%s*: %s\r\n' % (
+                                    note_index, note_date.strftime('%d/%m/%Y'), content['text'])
 
                                 keyboards.append(
-                                    InlineKeyboardButton(text='#%d' % note_index, callback_data='%s_del_t_%s_%d' % (self.class_name, cb_data_subjects_t[data].lower(), note_index))
+                                    InlineKeyboardButton(text='#%d' % note_index, callback_data='%s_del_t_%s_%d' % (
+                                        self.class_name, cb_data_subjects_t[data].lower(), note_index))
                                 )
 
                             keyboard = InlineKeyboardMarkup(
-                                inline_keyboard=list(keyboards[i:i+5] for i in range(0, len(keyboards), 5))
+                                inline_keyboard=list(
+                                    keyboards[i:i + 5] for i in range(0, len(keyboards), 5))
                             )
-                            self.bot.editMessageText(msg_id, t_reply, parse_mode='Markdown', reply_markup=keyboard)
+                            self.bot.editMessageText(
+                                msg_id, t_reply, parse_mode='Markdown', reply_markup=keyboard)
 
             # Delete tests/exams content
             elif data == '%s_del_m' % self.class_name:
                 if msg_id != None:
                     keyboards = []
                     for tag, content in self.notes[chat_id]['subjects'].items():
-                        keyboards.append(InlineKeyboardButton(text=content['name'], callback_data='%s_del_m_%s' % (self.class_name, tag.lower())))
+                        keyboards.append(InlineKeyboardButton(
+                            text=content['name'], callback_data='%s_del_m_%s' % (self.class_name, tag.lower())))
 
                     keyboards.sort()
 
-                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(keyboards[i:i+3] for i in range(0, len(keyboards), 3)))
-                    self.bot.editMessageText(msg_id, 'Escolha uma disciplina para apagar o conteúdo da prova', reply_markup=keyboard)
+                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(
+                        keyboards[i:i + 3] for i in range(0, len(keyboards), 3)))
+                    self.bot.editMessageText(
+                        msg_id, 'Escolha uma disciplina para apagar o conteúdo da prova', reply_markup=keyboard)
 
             # Delete tests/exams content for given subject
             elif data.startswith('%s_del_m_' % self.class_name):
                 # Find the id of the item we want to delete
                 if data.rfind('_') == 21:
                     subject = cb_data_subjects_m[data[0:21]]
-                    user_name = '%s (@%s)' % (msg['from']['first_name'], msg['from']['username']) if 'username' in msg['from'] else msg['from']['first_name']
+                    user_name = '%s (@%s)' % (msg['from']['first_name'], msg['from']['username']
+                                              ) if 'username' in msg['from'] else msg['from']['first_name']
                     subject_name = self.notes[chat_id]['subjects'][subject]['name']
 
                     try:
                         note_idx = int(data[22:])
 
                         del self.notes[chat_id]['subjects'][subject]['materia_provas'][note_idx]
-                        self.bot.editMessageText(msg_id, 'Conteúdo nº%d de %s apagado com sucesso!' % (note_idx, subject_name), reply_markup=None)
-                        self.bot.sendMessage(chat_id, 'O usuário %s apagou um conteúdo de %s.' % (user_name, subject_name))
+                        self.bot.editMessageText(msg_id, 'Conteúdo nº%d de %s apagado com sucesso!' % (
+                            note_idx, subject_name), reply_markup=None)
+                        self.bot.sendMessage(
+                            chat_id, 'O usuário %s apagou um conteúdo de %s.' % (user_name, subject_name))
                     except ValueError:
                         if data[22:] == "all":
-                            self.notes[chat_id]['subjects'][subject]['materia_provas'].clear()
-                            self.bot.editMessageText(msg_id, 'Conteúdo de %s apagado com sucesso!', subject_name, reply_markup=None)
-                            self.bot.sendMessage(chat_id, 'O usuário %s apagou todos os conteúdos de %s.' % (user_name, subject_name))
+                            self.notes[chat_id]['subjects'][subject]['materia_provas'].clear(
+                            )
+                            self.bot.editMessageText(
+                                msg_id, 'Conteúdo de %s apagado com sucesso!', subject_name, reply_markup=None)
+                            self.bot.sendMessage(chat_id, 'O usuário %s apagou todos os conteúdos de %s.' % (
+                                user_name, subject_name))
 
                 if data in cb_data_subjects_m:
                     if msg_id != None:
@@ -289,41 +332,52 @@ class SchoolNotes():
                         m_reply = 'Selecione o conteúdo de %s para apagar:\r\n' % name if content_len > 0 else '*Não há conteúdo de %s.*' % name
 
                         if content_len > 0:
-                            keyboards = [InlineKeyboardButton(text='Cancelar', callback_data='%s_menu' % self.class_name)]
+                            keyboards = [InlineKeyboardButton(
+                                text='Cancelar', callback_data='%s_menu' % self.class_name)]
 
                             for content in subject['materia_provas']:
-                                note_date = date.fromtimestamp(content['date_added'])
-                                note_index = subject['materia_provas'].index(content)
-                                m_reply += ' - *#%d*, adicionado em *%s*: %s\r\n' % (note_index, note_date.strftime('%d/%m/%Y'), content['text'])
+                                note_date = date.fromtimestamp(
+                                    content['date_added'])
+                                note_index = subject['materia_provas'].index(
+                                    content)
+                                m_reply += ' - *#%d*, adicionado em *%s*: %s\r\n' % (
+                                    note_index, note_date.strftime('%d/%m/%Y'), content['text'])
 
                                 keyboards.append(
-                                    InlineKeyboardButton(text='#%d' % note_index, callback_data='%s_del_m_%s_%d' % (self.class_name, cb_data_subjects_m[data].lower(), note_index))
+                                    InlineKeyboardButton(text='#%d' % note_index, callback_data='%s_del_m_%s_%d' % (
+                                        self.class_name, cb_data_subjects_m[data].lower(), note_index))
                                 )
 
                             keyboard = InlineKeyboardMarkup(
-                                inline_keyboard=list(keyboards[i:i+5] for i in range(0, len(keyboards), 5))
+                                inline_keyboard=list(
+                                    keyboards[i:i + 5] for i in range(0, len(keyboards), 5))
                             )
-                            self.bot.editMessageText(msg_id, m_reply, parse_mode='Markdown', reply_markup=keyboard)
+                            self.bot.editMessageText(
+                                msg_id, m_reply, parse_mode='Markdown', reply_markup=keyboard)
             # List homeworks or tests/exams content
             elif data == '%s_list' % self.class_name:
                 if msg_id != None:
                     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                            [InlineKeyboardButton(text='Matérias de prova', callback_data='%s_list_m' % self.class_name),
-                             InlineKeyboardButton(text='Tarefas de casa', callback_data='%s_list_t' % self.class_name)]
-                        ])
-                    self.bot.editMessageText(msg_id, 'O que deseja listar?', reply_markup=keyboard)
+                        [InlineKeyboardButton(text='Matérias de prova', callback_data='%s_list_m' % self.class_name),
+                         InlineKeyboardButton(text='Tarefas de casa', callback_data='%s_list_t' % self.class_name)]
+                    ])
+                    self.bot.editMessageText(
+                        msg_id, 'O que deseja listar?', reply_markup=keyboard)
 
             # List homeworks
             elif data == '%s_list_t' % self.class_name:
                 keyboards = []
                 for tag, content in self.notes[chat_id]['subjects'].items():
-                    keyboards.append(InlineKeyboardButton(text=content['name'], callback_data='%s_list_t_%s' % (self.class_name, tag.lower())))
+                    keyboards.append(InlineKeyboardButton(
+                        text=content['name'], callback_data='%s_list_t_%s' % (self.class_name, tag.lower())))
 
                 keyboards.sort()
 
                 if msg_id != None:
-                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(keyboards[i:i+3] for i in range(0, len(keyboards), 3)))
-                    self.bot.editMessageText(msg_id, 'Escolha uma matéria para mostrar a lista de tarefas', reply_markup=keyboard)
+                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(
+                        keyboards[i:i + 3] for i in range(0, len(keyboards), 3)))
+                    self.bot.editMessageText(
+                        msg_id, 'Escolha uma matéria para mostrar a lista de tarefas', reply_markup=keyboard)
 
             # List homeworks for a given subject
             elif data.startswith('%s_list_t_' % self.class_name):
@@ -331,7 +385,8 @@ class SchoolNotes():
                     if msg_id != None:
                         name = self.notes[chat_id]['subjects'][cb_data_subjects_t[data]]['name']
 
-                        content_len = len(self.notes[chat_id]['subjects'][cb_data_subjects_t[data]]['tarefas'])
+                        content_len = len(
+                            self.notes[chat_id]['subjects'][cb_data_subjects_t[data]]['tarefas'])
 
                         t_reply = '*Tarefas de %s*\r\n' % name if content_len > 0 else '*Não há tarefas de %s.*' % name
 
@@ -339,23 +394,28 @@ class SchoolNotes():
                             t_reply += 'total: %d\r\n\r\n' % content_len
 
                             for content in self.notes[chat_id]['subjects'][cb_data_subjects_t[data]]['tarefas']:
-                                note_date = date.fromtimestamp(content['date_added'])
-                                t_reply += ' - *%s*: %s\r\n' % (note_date.strftime('%d/%m/%Y'), content['text'])
+                                note_date = date.fromtimestamp(
+                                    content['date_added'])
+                                t_reply += ' - *%s*: %s\r\n' % (
+                                    note_date.strftime('%d/%m/%Y'), content['text'])
 
-
-                        self.bot.editMessageText(msg_id, t_reply, parse_mode='Markdown', reply_markup=None)
+                        self.bot.editMessageText(
+                            msg_id, t_reply, parse_mode='Markdown', reply_markup=None)
 
             # List tests/exams content
             elif data == '%s_list_m' % self.class_name:
                 keyboards = []
                 for tag, content in self.notes[chat_id]['subjects'].items():
-                    keyboards.append(InlineKeyboardButton(text=content['name'], callback_data='%s_list_m_%s' % (self.class_name, tag.lower())))
+                    keyboards.append(InlineKeyboardButton(
+                        text=content['name'], callback_data='%s_list_m_%s' % (self.class_name, tag.lower())))
 
                 keyboards.sort()
 
                 if msg_id != None:
-                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(keyboards[i:i+3] for i in range(0, len(keyboards), 3)))
-                    self.bot.editMessageText(msg_id, 'Escolha uma disciplina para mostrar o conteúdo da próxima prova:', reply_markup=keyboard)
+                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(
+                        keyboards[i:i + 3] for i in range(0, len(keyboards), 3)))
+                    self.bot.editMessageText(
+                        msg_id, 'Escolha uma disciplina para mostrar o conteúdo da próxima prova:', reply_markup=keyboard)
 
             # List tests/exams content for a given subject
             elif data.startswith('%s_list_m_' % self.class_name):
@@ -363,7 +423,8 @@ class SchoolNotes():
                     if msg_id != None:
                         name = self.notes[chat_id]['subjects'][cb_data_subjects_m[data]]['name']
 
-                        content_len = len(self.notes[chat_id]['subjects'][cb_data_subjects_m[data]]['materia_provas'])
+                        content_len = len(
+                            self.notes[chat_id]['subjects'][cb_data_subjects_m[data]]['materia_provas'])
 
                         m_reply = '*Conteúdo de %s*\r\n' % name if content_len > 0 else '*Não há conteúdo de prova de %s.*' % name
 
@@ -373,5 +434,5 @@ class SchoolNotes():
                             for content in self.notes[chat_id]['subjects'][cb_data_subjects_m[data]]['materia_provas']:
                                 m_reply += ' - %s\r\n' % content['text']
 
-
-                        self.bot.editMessageText(msg_id, m_reply, parse_mode='Markdown', reply_markup=None)
+                        self.bot.editMessageText(
+                            msg_id, m_reply, parse_mode='Markdown', reply_markup=None)
