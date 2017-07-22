@@ -177,6 +177,7 @@ class SchoolNotes():
 
                         reply_msg = 'Responda a esta mensagem com o conteúdo da tarefa de casa. Envie apenas uma resposta.'
                         self.add_lock['id'] = msg_id
+                        self.add_lock['type'] = 't'
                         self.add_lock['subject'] = cb_data_subjects_t[data]
                         print(self.add_lock)
 
