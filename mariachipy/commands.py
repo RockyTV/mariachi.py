@@ -374,12 +374,3 @@ class SchoolNotes():
 
 
                         self.bot.editMessageText(msg_id, m_reply, parse_mode='Markdown', reply_markup=None)
-        else:
-            # Handle callback query for module
-            if data == '%s_menu' % self.class_name:
-                keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                                    [InlineKeyboardButton(text='Add Note', callback_data='%s_add' % self.class_name),
-                                     InlineKeyboardButton(text='Show Notes', callback_data='%s_list' % self.class_name),
-                                     InlineKeyboardButton(text='Delete Note', callback_data='%s_del' % self.class_name)],
-                               ])
-                self.bot.editMessageText(msg_id, 'What do you want to do with your notes?', reply_markup=keyboard)
