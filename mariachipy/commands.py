@@ -282,6 +282,8 @@ class SchoolNotes():
                             note_idx, subject_name), reply_markup=None)
                         self.bot.sendMessage(
                             chat_id, 'O usuário %s apagou uma tarefa de %s.' % (user_name, subject_name))
+
+                        save_notes()
                     else:
                         if data[22:] == 'all':
                             self.notes[chat_id]['subjects'][subject]['tarefas'].clear(
@@ -290,6 +292,8 @@ class SchoolNotes():
                                 msg_id, 'Tarefas de %s apagadas com sucesso!' % subject_name, reply_markup=None)
                             self.bot.sendMessage(chat_id, 'O usuário %s apagou todas as tarefas de %s.' % (
                                 user_name, subject_name))
+
+                            save_notes()
 
                 if data in cb_data_subjects_t:
                     if msg_id != None:
@@ -362,6 +366,8 @@ class SchoolNotes():
                             note_idx, subject_name), reply_markup=None)
                         self.bot.sendMessage(
                             chat_id, 'O usuário %s apagou um conteúdo de %s.' % (user_name, subject_name))
+
+                        save_notes()
                     else:
                         if data[22:] == 'all':
                             self.notes[chat_id]['subjects'][subject]['materia_provas'].clear(
@@ -370,6 +376,8 @@ class SchoolNotes():
                                 msg_id, 'Conteúdo de %s apagado com sucesso!' % subject_name, reply_markup=None)
                             self.bot.sendMessage(chat_id, 'O usuário %s apagou todos os conteúdos de %s.' % (
                                 user_name, subject_name))
+
+                            save_notes()
 
                 if data in cb_data_subjects_m:
                     if msg_id != None:
