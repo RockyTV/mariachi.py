@@ -263,14 +263,20 @@ class SchoolNotes():
                 # Find the id of the item we want to delete
                 if data.rfind('_') == 21:
                     subject = cb_data_subjects_m[data[0:21]]
-                    note_idx = int(data[22:])
-
                     user_name = '%s (@%s)' % (msg['from']['first_name'], msg['from']['username']) if 'username' in msg['from'] else msg['from']['first_name']
                     subject_name = self.notes[chat_id]['subjects'][subject]['name']
 
-                    del self.notes[chat_id]['subjects'][subject]['materia_provas'][note_idx]
-                    self.bot.editMessageText(msg_id, 'Conteúdo de %s apagado com sucesso!' % self.notes[chat_id]['subjects'][subject]['name'], reply_markup=None)
-                    self.bot.sendMessage(chat_id, 'O usuário %s apagou um conteúdo de %s.' % (user_name, subject_name))
+                    try:
+                        note_idx = int(data[22:])
+
+                        del self.notes[chat_id]['subjects'][subject]['materia_provas'][note_idx]
+                        self.bot.editMessageText(msg_id, 'Conteúdo nº%d de %s apagado com sucesso!' % (note_idx, subject_name), reply_markup=None)
+                        self.bot.sendMessage(chat_id, 'O usuário %s apagou um conteúdo de %s.' % (user_name, subject_name))
+                    except ValueError:
+                        if data[22:] == "all":
+                            self.notes[chat_id]['subjects'][subject]['materia_provas'].clear()
+                            self.bot.editMessageText(msg_id, 'Conteúdo de %s apagado com sucesso!', subject_name, reply_markup=None)
+                            self.bot.sendMessage(chat_id, 'O usuário %s apagou todos os conteúdos de %s.' % (user_name, subject_name))
 
                 if data in cb_data_subjects_m:
                     if msg_id != None:
