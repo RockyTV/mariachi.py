@@ -51,8 +51,8 @@ class SchoolNotes():
         self.pickle_path = os.path.join(os.path.expanduser('~'), 'app-root/data/notes.pickle') if 'OPENSHIFT_PYTHON_IP' in os.environ else 'notes.pickle'
         self.prev_inline_query = None
         self.class_name = self.__class__.__name__.lower()
-        self.add_lock = {};
-        self.del_lock = {};
+        self.add_lock = {}
+        self.del_lock = {}
         self.school_group = -126875187
 
         subjects = {
