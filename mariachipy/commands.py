@@ -109,8 +109,13 @@ class SchoolNotes():
 
                 if reply_to == self.add_lock['id']:
                     if chat_id == self.school_group:
+                        db_obj = 'tarefas' if self.add_lock['type'] == 't' else 'materia_provas'
+                        text_obj = 'Tarefa de casa adicionada' if self.add_lock[
+                            'type'] == 't' else 'Conteúdo de prova adicionado'
+                        text_obj2 = 'uma tarefa de casa' if self.add_lock[
+                            'type'] == 't' else 'um conteúdo de prova'
 
-                        tarefa = {
+                        obj = {
                             'date_added': datetime.today().timestamp(),
                             'text': msg['text']
                         }
@@ -119,12 +124,12 @@ class SchoolNotes():
                             msg['from']['first_name'], msg['from']['username']) if 'username' in msg['from'] else msg['from']['first_name']
                         subject_name = self.notes[chat_id]['subjects'][self.add_lock['subject']]['name']
 
-                        self.notes[chat_id]['subjects'][self.add_lock['subject']]['tarefas'].append(
-                            tarefa)
+                        self.notes[chat_id]['subjects'][self.add_lock['subject']][db_obj].append(
+                            obj)
                         self.bot.editMessageText(
-                            self.add_lock['id'], 'Tarefa de casa adicionada com sucesso!')
-                        self.bot.sendMessage(chat_id, 'O usuário %s adicionou uma tarefa de casa de %s.' % (
-                            user_name, subject_name))
+                            self.add_lock['id'], '%s com sucesso!' % text_obj)
+                        self.bot.sendMessage(chat_id, 'O usuário %s adicionou %s de %s.' % (
+                            user_name, text_obj2, subject_name))
                         self.save_notes()
 
     def on_callback_query(self, msg):
@@ -198,6 +203,36 @@ class SchoolNotes():
                         self.add_lock['id'] = msg_id
                         self.add_lock['type'] = 't'
                         self.add_lock['subject'] = cb_data_subjects_t[data]
+                        print(self.add_lock)
+
+                        self.bot.editMessageText(
+                            msg_id, reply_msg, parse_mode='Markdown', reply_markup=None)
+
+            # Add exams/tests content
+            elif data == '%s_add_m' % self.class_name:
+                if msg_id != None:
+                    keyboards = []
+                    for tag, content in self.notes[chat_id]['subjects'].items():
+                        keyboards.append(InlineKeyboardButton(
+                            text=content['name'], callback_data='%s_add_m_%s' % (self.class_name, tag.lower())))
+
+                    keyboards.sort()
+
+                    keyboard = InlineKeyboardMarkup(inline_keyboard=list(
+                        keyboards[i:i + 3] for i in range(0, len(keyboards), 3)))
+                    self.bot.editMessageText(
+                        msg_id, 'Escolha uma disciplina para adicionar conteúdo de prova', reply_markup=keyboard)
+
+            # Add exams/tests content for given subject
+            elif data.startswith('%s_add_m_' % self.class_name):
+                if data in cb_data_subjects_m:
+                    if msg_id != None:
+                        name = self.notes[chat_id]['subjects'][cb_data_subjects_m[data]]['name']
+
+                        reply_msg = 'Responda a esta mensagem com o conteúdo de prova. Envie apenas uma resposta.'
+                        self.add_lock['id'] = msg_id
+                        self.add_lock['type'] = 'm'
+                        self.add_lock['subject'] = cb_data_subjects_m[data]
                         print(self.add_lock)
 
                         self.bot.editMessageText(
