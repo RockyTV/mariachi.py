@@ -268,22 +268,32 @@ class SchoolNotes():
                 # Find the id of the item we want to delete
                 if data.rfind('_') == 21:
                     subject = cb_data_subjects_t[data[0:21]]
-                    note_idx = int(data[22:])
-
                     user_name = '%s (@%s)' % (msg['from']['first_name'], msg['from']['username']
                                               ) if 'username' in msg['from'] else msg['from']['first_name']
                     subject_name = self.notes[chat_id]['subjects'][subject]['name']
 
-                    del self.notes[chat_id]['subjects'][subject]['tarefas'][note_idx]
-                    self.bot.editMessageText(msg_id, 'Tarefa de %s apagada com sucesso!' %
-                                             self.notes[chat_id]['subjects'][subject]['name'], reply_markup=None)
-                    self.bot.sendMessage(chat_id, 'O usuário %s apagou uma tarefa de casa de %s.' % (
-                        user_name, subject_name))
+                    if data[22:].isdigit():
+                        note_idx = int(data[22:])
+
+                        del self.notes[chat_id]['subjects'][subject]['tarefas'][note_idx]
+                        self.bot.editMessageText(msg_id, 'Tarefa de casa nº %d de %s apagada com sucesso!' % (
+                            note_idx, subject_name), reply_markup=None)
+                        self.bot.sendMessage(
+                            chat_id, 'O usuário %s apagou uma tarefa de %s.' % (user_name, subject_name))
+                    else:
+                        if data[22:] == 'all':
+                            self.notes[chat_id]['subjects'][subject]['tarefas'].clear(
+                            )
+                            self.bot.editMessageText(
+                                msg_id, 'Tarefas de %s apagadas com sucesso!' % subject_name, reply_markup=None)
+                            self.bot.sendMessage(chat_id, 'O usuário %s apagou todas as tarefas de %s.' % (
+                                user_name, subject_name))
 
                 if data in cb_data_subjects_t:
                     if msg_id != None:
                         name = self.notes[chat_id]['subjects'][cb_data_subjects_t[data]]['name']
                         subject = self.notes[chat_id]['subjects'][cb_data_subjects_t[data]]
+                        tag = cb_data_subjects_t[data].lower()
 
                         content_len = len(subject['tarefas'])
 
@@ -294,7 +304,7 @@ class SchoolNotes():
                                          InlineKeyboardButton(
                                              text='Cancelar', callback_data='%s_menu' % self.class_name),
                                          InlineKeyboardButton(
-                                             text='Todas', callback_data='%s_del_t_all' % self.class_name),
+                                             text='Todas', callback_data='%s_del_t_%s_all' % (self.class_name, tag)),
                                          ]
 
                             for content in subject['tarefas']:
