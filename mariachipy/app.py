@@ -52,7 +52,7 @@ def on_chat_message(msg):
                 alias = cmd.get_alias() if hasattr(cmd, 'get_alias') else class_name
                 keyboards[0].append(InlineKeyboardButton(text=alias, callback_data='%s_menu' % class_name.lower()))
 
-            bot.sendMessage(chat_id, 'Select a command below', reply_to_message_id=msg['message_id'], reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboards))
+            bot.sendMessage(chat_id, 'Escolha um comando abaixo', reply_to_message_id=msg['message_id'], reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboards))
 
         else:
             for cmd in registered_commands:

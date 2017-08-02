@@ -48,7 +48,7 @@ class SchoolNotes():
         self.notes = {
             'version': '1.0',
             'last_updated': datetime.today().timestamp(),
-            -126875187: {
+            -1001045780811: {
                 'subjects': {}
             }
         }
@@ -58,7 +58,7 @@ class SchoolNotes():
         self.class_name = self.__class__.__name__.lower()
         self.add_lock = {}
         self.del_lock = {}
-        self.school_group = -126875187
+        self.school_group = -1001045780811
 
         subjects = {
             'ART': 'Artes',
