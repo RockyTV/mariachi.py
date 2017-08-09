@@ -1,3 +1,4 @@
+# -*- coding: latin-1 -*-
 """
 This script runs the application using a development server.
 It contains the definition of routes and views for the application.
@@ -8,11 +9,15 @@ import time
 import telepot
 import importlib
 from flask import Flask, request
-from telepot.loop import MessageLoop
+from telepot.loop import MessageLoop, OrderedWebhook
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 
 if not 'TELEGRAM_TOKEN' in os.environ:
     raise(RuntimeError('Missing Telegram token'))
+
+app = Flask(__name__)
+
+SECRET_URL='/bot' + os.environ['TELEGRAM_TOKEN']
 
 bot = telepot.Bot(os.environ['TELEGRAM_TOKEN'])
 bot.deleteWebhook()
@@ -60,7 +65,6 @@ def on_chat_message(msg):
 
 def on_callback_query(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    print(msg)
 
     for cmd in registered_commands:
         if query_data.startswith(cmd.__class__.__name__.lower()):
@@ -72,9 +76,25 @@ MessageLoop(bot, {
     'callback_query': on_callback_query
 }).run_as_thread()
 
+WEBHOOK = OrderedWebhook(bot)
+
+@app.route(SECRET_URL, methods=['GET', 'POST'])
+def pass_update():
+    WEBHOOK.feed(request.data)
+    return 'OK'
+
 if __name__ == '__main__':
     bot_username = bot.getMe()['username']
-    register_commands() 
+    register_commands()
+    ip='127.0.0.1'
 
-while 1:
-    time.sleep(10)
+    if 'OPENSHIFT_PYTHON_IP' in os.environ:
+        ip = os.environ['OPENSHIFT_PYTHON_IP']
+        try:
+            bot.setWebhook('https://pymariachi-xinayder.rhcloud.com' + SECRET_URL)
+        except telepot.exception.TooManyRequestsError:
+            pass
+        WEBHOOK.run_as_thread()
+        app.run(host=ip, port=8080, debug=True)
+    else:
+        while(1): time.sleep(10)

@@ -1,3 +1,4 @@
+# -*- coding: latin-1 -*-
 import os
 import pickle
 import re
@@ -135,7 +136,6 @@ class SchoolNotes():
                         self.save_notes()
 
     def on_callback_query(self, msg):
-        print(msg)
         query_id, from_id, data = telepot.glance(msg, flavor='callback_query')
         chat_id = msg['message']['chat']['id']
 
