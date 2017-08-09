@@ -71,38 +71,14 @@ def on_callback_query(msg):
             if from_id == msg['message']['reply_to_message']['from']['id']:
                 cmd.on_callback_query(msg)
 
-#MessageLoop(bot, {
-#    'chat': on_chat_message,
-#    'callback_query': on_callback_query
-#}).run_as_thread()
-
-def handle(msg):
-    print(msg)
-
-WEBHOOK = OrderedWebhook(bot, handle)
-
-@app.route(SECRET_URL, methods=['GET', 'POST'])
-def pass_update():
-    WEBHOOK.feed(request.data)
-    return 'OK'
-
-@app.route('/', methods=['GET'])
-def hello_world():
-    return 'Hello, world!'
-
+MessageLoop(bot, {
+    'chat': on_chat_message,
+    'callback_query': on_callback_query
+}).run_as_thread()
 
 if __name__ == '__main__':
     bot_username = bot.getMe()['username']
     register_commands()
-    ip='127.0.0.1'
 
-    if 'OPENSHIFT_PYTHON_IP' in os.environ:
-        ip = os.environ['OPENSHIFT_PYTHON_IP']
-        try:
-            bot.setWebhook('https://pymariachi-xinayder.rhcloud.com' + SECRET_URL)
-        except telepot.exception.TooManyRequestsError:
-            pass
-        WEBHOOK.run_as_thread()
-        app.run(host=ip, port=8080, debug=True)
-    else:
-        while(1): time.sleep(10)
+while(1):
+    time.sleep(10)
