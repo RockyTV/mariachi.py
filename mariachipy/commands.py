@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 import os
 import pickle
 import re
