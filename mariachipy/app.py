@@ -71,12 +71,15 @@ def on_callback_query(msg):
             if from_id == msg['message']['reply_to_message']['from']['id']:
                 cmd.on_callback_query(msg)
 
-MessageLoop(bot, {
-    'chat': on_chat_message,
-    'callback_query': on_callback_query
-}).run_as_thread()
+#MessageLoop(bot, {
+#    'chat': on_chat_message,
+#    'callback_query': on_callback_query
+#}).run_as_thread()
 
-WEBHOOK = OrderedWebhook(bot)
+def handle(msg):
+    print(msg)
+
+WEBHOOK = OrderedWebhook(bot, handle)
 
 @app.route(SECRET_URL, methods=['GET', 'POST'])
 def pass_update():
