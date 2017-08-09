@@ -94,7 +94,7 @@ if __name__ == '__main__':
             bot.setWebhook('https://pymariachi-xinayder.rhcloud.com' + SECRET_URL)
         except telepot.exception.TooManyRequestsError:
             pass
-        WEBHOOK.run_as_thread()
+        WEBHOOK.run_forever()
         app.run(host=ip, port=8080, debug=True)
     else:
         while(1): time.sleep(10)
