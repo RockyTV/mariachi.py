@@ -83,6 +83,11 @@ def pass_update():
     WEBHOOK.feed(request.data)
     return 'OK'
 
+@app.route('/', methods=['GET'])
+def hello_world():
+    return 'Hello, world!'
+
+
 if __name__ == '__main__':
     bot_username = bot.getMe()['username']
     register_commands()
@@ -94,7 +99,7 @@ if __name__ == '__main__':
             bot.setWebhook('https://pymariachi-xinayder.rhcloud.com' + SECRET_URL)
         except telepot.exception.TooManyRequestsError:
             pass
-        WEBHOOK.run_forever()
+        WEBHOOK.run_as_thread()
         app.run(host=ip, port=8080, debug=True)
     else:
         while(1): time.sleep(10)
